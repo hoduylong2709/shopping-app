@@ -1,4 +1,5 @@
 const express = require('express');
+const { title } = require('process');
 
 const router = express.Router();
 
@@ -101,6 +102,25 @@ router.post('/reorder-pages', (req, res) => {
       });
     })(count);
   }
+});
+
+/*
+* GET edit page
+*/
+router.get('/edit-page/:slug', (req, res) => {
+  Page.findOne({ slug: req.params.slug }).then((page) => {
+    if (!page) { //if page not exist in db
+      return res.status(404).send('Page not found');
+    }
+    res.render('admin/edit_page', { //page  exist
+      title: page.title,
+      slug: page.slug,
+      content: page.content,
+      id: page._id
+    });
+  }).catch((e) => {//bad request 
+    res.status(400).send(e);
+  });
 });
 
 module.exports = router;
