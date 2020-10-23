@@ -7,6 +7,7 @@ const expressValidator = require('express-validator');
 const config = require('./config/database');
 const pages = require('./routes/pages');
 const adminPages = require('./routes/admin_pages');
+const adminCategories = require('./routes/admin_categories');
 
 // Connect to db
 mongoose.connect(config.database);
@@ -71,6 +72,7 @@ app.use(function (req, res, next) {
 
 // Set routes
 app.use('/admin/pages', adminPages);
+app.use('/admin/categories', adminCategories);
 app.use('/', pages);
 
 // Start the server
