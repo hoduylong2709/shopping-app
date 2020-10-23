@@ -1,0 +1,27 @@
+<%- include ("../_layouts/adminheader") %>
+
+<main role="main" class="container">
+  <div class="starter-template">
+    <h2 class="page-title">Edit a category</h2>
+    <a href="/admin/categories" class="btn btn-primary"
+      >Back to all categories</a
+    >
+    <br />
+
+    <form action="/admin/categories/edit-category/<%= id%>" method="POST">
+      <div class="form-group">
+        <label for="">Title</label>
+        <input
+          type="text"
+          name="title"
+          value="<%= title %>"
+          class="form-control"
+          placeholder="Title"
+        />
+      </div>
+      <button class="btn btn-light">Submit</button>
+    </form>
+  </div>
+</main>
+
+<%- include ("../_layouts/adminfooter") %>
