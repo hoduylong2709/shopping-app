@@ -57,7 +57,7 @@ router.post('/add-page', (req, res) => {
   } else {
     Page.findOne({ slug: slug }, (err, page) => {
       if (page) {
-        req.flash('danger', 'Page slug exists, choose another');
+        // req.flash('danger', 'Page slug exists, choose another');
         res.render('admin/add_page', {
           title: title,
           slug: slug,
@@ -72,7 +72,7 @@ router.post('/add-page', (req, res) => {
         });
         page.save((err) => {
           if (err) return console.log(err);
-          req.flash('Success', 'Page added!');
+          // req.flash('Success', 'Page added!');
           res.redirect('/admin/pages');
         });
       }
@@ -120,6 +120,68 @@ router.get('/edit-page/:slug', (req, res) => {
     });
   }).catch((e) => {//bad request 
     res.status(400).send(e);
+  });
+});
+
+/*
+* POST edit page
+*/
+router.post('/edit-page/:slug', (req, res) => {
+  req.checkBody('title', 'title must have a value').notEmpty();
+  req.checkBody('content', 'Content must have a value').notEmpty();
+
+  var title = req.body.title;
+  var slug = req.body.slug.replace(/\s+/g, '-').toLowerCase();
+  if (slug === "") slug = title.replace(/\s+/g, '-').toLowerCase();
+  var content = req.body.content;
+  var id = req.body.id;
+
+  var errors = req.validationErrors();
+
+  if (errors) {
+    // console.log('errors');
+    res.render('admin/edit_page', {
+      errors: errors,
+      title: title,
+      slug: slug,
+      content: content,
+      id: id
+    });
+  } else {
+    Page.findOne({ slug: slug, _id: { '$ne': id } }, (err, page) => {
+      if (page) {
+        // req.flash('danger', 'Page slug exists, choose another');
+        res.render('admin/edit_page', {
+          title: title,
+          slug: slug,
+          content: content,
+          id: id
+        });
+      } else {
+        Page.findById(id, (err, page) => {
+          if (err) return console.log(err);
+          page.title = title;
+          page.slug = slug;
+          page.content = content;
+          page.save((err) => {
+            if (err) return console.log(err);
+            // req.flash('success', 'Page added!');
+            res.redirect('/admin/pages/edit-page/' + page.slug);
+          });
+        });
+      }
+    });
+  }
+});
+
+/*
+* GET delete page
+*/
+router.get('/delete-page/:id', (req, res) => {
+  Page.findByIdAndRemove(req.params.id, (err) => {
+    if (err) return console.log(err);
+    // req.flash('success', 'Page deleted!');
+    res.redirect('/admin/pages/');
   });
 });
 
