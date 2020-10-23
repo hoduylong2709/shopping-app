@@ -8,6 +8,8 @@ const config = require('./config/database');
 const pages = require('./routes/pages');
 const adminPages = require('./routes/admin_pages');
 const adminCategories = require('./routes/admin_categories');
+const adminProducts = require('./routes/admin_products');
+const fileUpload = require('express-fileupload');
 
 // Connect to db
 mongoose.connect(config.database);
@@ -29,6 +31,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Set global errors variable
 app.locals.errors = null;
+
+// Express fileUpload middleware
+app.use(fileUpload());
 
 // Body Parser middleware
 //
@@ -73,6 +78,7 @@ app.use(function (req, res, next) {
 // Set routes
 app.use('/admin/pages', adminPages);
 app.use('/admin/categories', adminCategories);
+app.use('/admin/products', adminProducts);
 app.use('/', pages);
 
 // Start the server
