@@ -6,7 +6,7 @@
     <a href="/admin/pages" class="btn btn-primary">Back to all pages</a>
     <br />
 
-    <form action="/admin/pages/edit-page/<%= slug%>" method="POST">
+    <form action="/admin/pages/edit-page/<%= id%>" method="POST">
       <div class="form-group">
         <label for="">Title</label>
         <input
@@ -42,7 +42,6 @@
 <%= content %></textarea
         >
       </div>
-      <input type="hidden" name="id" value="<%= id%>" />
       <button class="btn btn-light">Submit</button>
     </form>
   </div>
