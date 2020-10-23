@@ -1,20 +1,21 @@
 const express = require('express');
+const category = require('../models/category');
 
 const router = express.Router();
 
 // Get Category model
-var Page = require('../models/category');
+var Category = require('../models/category');
 
 /*
-* GET pages index
+* GET category index
 */
 router.get('/', (req, res) => {
-  res.send('Cast index');
-  // Page.find({}).sort({ sorting: 1 }).exec((err, pages) => {
-  //   res.render('admin/pages', {
-  //     pages: pages
-  //   });
-  // });
+  Category.find((err, categories) => {
+    if (err) return console.log(err);
+    res.render('admin/categories', {
+      categories: categories
+    });
+  });
 });
 
 /*
