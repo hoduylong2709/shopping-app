@@ -1,5 +1,4 @@
 const express = require('express');
-const category = require('../models/category');
 
 const router = express.Router();
 
@@ -19,62 +18,49 @@ router.get('/', (req, res) => {
 });
 
 /*
-* GET add page
+* GET add category
 */
-router.get('/add-page', (req, res) => {
+router.get('/add-category', (req, res) => {
   var title = "";
-  var slug = "";
-  var content = "";
 
-  res.render('admin/add_page', {
-    title: title,
-    slug: slug,
-    content: content
+  res.render('admin/add_category', {
+    title: title
   });
 });
 
 /*
-* POST add page
+* POST add category
 */
-router.post('/add-page', (req, res) => {
+router.post('/add-category', (req, res) => {
   req.checkBody('title', 'title must have a value').notEmpty();
-  req.checkBody('content', 'Content must have a value').notEmpty();
 
   var title = req.body.title;
-  var slug = req.body.slug.replace(/\s+/g, '-').toLowerCase();
-  if (slug === "") slug = title.replace(/\s+/g, '-').toLowerCase();
-  var content = req.body.content;
+  var slug = title.replace(/\s+/g, '-').toLowerCase();
 
   var errors = req.validationErrors();
 
   if (errors) {
     console.log('errors');
-    res.render('admin/add_page', {
+    res.render('admin/add_category', {
       errors: errors,
-      title: title,
-      slug: slug,
-      content: content
+      title: title
     });
   } else {
-    Page.findOne({ slug: slug }, (err, page) => {
-      if (page) {
-        // req.flash('danger', 'Page slug exists, choose another');
-        res.render('admin/add_page', {
-          title: title,
-          slug: slug,
-          content: content
+    Category.findOne({ slug: slug }, (err, category) => {
+      if (category) {
+        // req.flash('danger', 'Category slug exists, choose another');
+        res.render('admin/add_category', {
+          title: title
         });
       } else {
-        var page = new Page({
+        var category = new Category({
           title: title,
-          slug: slug,
-          content: content,
-          sorting: 100
+          slug: slug
         });
-        page.save((err) => {
+        category.save((err) => {
           if (err) return console.log(err);
-          // req.flash('Success', 'Page added!');
-          res.redirect('/admin/pages');
+          // req.flash('Success', 'Category added!');
+          res.redirect('/admin/categories');
         });
       }
     });
