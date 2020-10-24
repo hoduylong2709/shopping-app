@@ -8,13 +8,21 @@ const router = express.Router();
 // Get Product model
 var Product = require('../models/product');
 
+// Get Category model
+var Category = require('../models/category');
+
 /*
-* GET pages index
+* GET products index
 */
 router.get('/', (req, res) => {
-  Page.find({}).sort({ sorting: 1 }).exec((err, pages) => {
-    res.render('admin/pages', {
-      pages: pages
+  var count;
+  Product.count((err, c) => {
+    count = c;
+  });
+  Product.find((err, products) => {
+    res.render('admin/products', {
+      products: products,
+      count: count
     });
   });
 });
