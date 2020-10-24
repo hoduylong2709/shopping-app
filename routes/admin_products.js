@@ -46,47 +46,82 @@ router.get('/add-product', (req, res) => {
 });
 
 /*
-* POST add page
+* POST add product
 */
-router.post('/add-page', (req, res) => {
+router.post('/add-product', (req, res) => {
+  if (!req.files) { imageFile = ""; }
+  if (req.files) {
+    var imageFile = typeof (req.files.image) !== "undefined" ? req.files.image.name : "";
+  }
+
   req.checkBody('title', 'title must have a value').notEmpty();
-  req.checkBody('content', 'Content must have a value').notEmpty();
+  req.checkBody('desc', 'Description must have a value').notEmpty();
+  req.checkBody('price', 'Price must have a value').isDecimal();
+  req.checkBody('image', 'You must upload an image').isImage(imageFile);
 
   var title = req.body.title;
-  var slug = req.body.slug.replace(/\s+/g, '-').toLowerCase();
-  if (slug === "") slug = title.replace(/\s+/g, '-').toLowerCase();
-  var content = req.body.content;
+  var slug = title.replace(/\s+/g, '-').toLowerCase();
+  var desc = req.body.desc;
+  var price = req.body.price;
+  var category = req.body.category;
 
   var errors = req.validationErrors();
 
   if (errors) {
-    console.log('errors');
-    res.render('admin/add_page', {
-      errors: errors,
-      title: title,
-      slug: slug,
-      content: content
+    Category.find((err, categories) => {
+      res.render('admin/add_product', {
+        errors: errors,
+        title: title,
+        desc: desc,
+        categories: categories,
+        price: price
+      });
     });
   } else {
-    Page.findOne({ slug: slug }, (err, page) => {
-      if (page) {
-        // req.flash('danger', 'Page slug exists, choose another');
-        res.render('admin/add_page', {
-          title: title,
-          slug: slug,
-          content: content
+    Product.findOne({ slug: slug }, (err, product) => {
+      if (product) {
+        // req.flash('danger', 'Product title exists, choose another');
+        Category.find((err, categories) => {
+          res.render('admin/add_product', {
+            title: title,
+            desc: desc,
+            categories: categories,
+            price: price
+          });
         });
       } else {
-        var page = new Page({
+        var price2 = parseFloat(price).toFixed(2);
+        var product = new Product({
           title: title,
           slug: slug,
-          content: content,
-          sorting: 100
+          desc: desc,
+          price: price2,
+          category: category,
+          image: imageFile
         });
-        page.save((err) => {
+        product.save((err) => {
           if (err) return console.log(err);
-          // req.flash('Success', 'Page added!');
-          res.redirect('/admin/pages');
+          fs.mkdir('public/product_images/' + product._id, function (err) {
+            if (err) { return console.log(err); }
+          });
+
+          fs.mkdir('public/product_images/' + product._id + '/gallery', function (err) {
+            if (err) { return console.log(err); }
+          });
+
+          fs.mkdir('public/product_images/' + product._id + '/gallery/thumbs', function (err) {
+            if (err) { return console.log(err); }
+          });
+          if (imageFile != "") {
+            var productImage = req.files.image;
+            var path = 'public/product_images/' + product._id + '/' + imageFile;
+
+            productImage.mv(path, (err) => {
+              return console.log(err);
+            });
+          }
+          // req.flash('Success', 'Product added!');
+          res.redirect('/admin/products');
         });
       }
     });
