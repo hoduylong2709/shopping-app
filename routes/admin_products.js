@@ -208,9 +208,9 @@ router.post('/edit-product/:id', (req, res) => {
         Product.findById(id, (err, p) => {
           if (err) { console.log(err); }
           p.title = title,
-          p.slug = slug,
-          p.desc = desc,
-          p.price = parseFloat(price).toFixed(2);
+            p.slug = slug,
+            p.desc = desc,
+            p.price = parseFloat(price).toFixed(2);
           p.category = category;
           if (imageFile != "") {
             p.image = imageFile;
@@ -237,6 +237,26 @@ router.post('/edit-product/:id', (req, res) => {
       }
     });
   }
+}); 
+
+/*
+* POST product gallery
+*/
+router.post('/product-gallery/:id', (req, res) => {
+  var productImage = req.files.file;
+  var id = req.params.id;
+  var path = 'public/product_images/' + id + '/gallery/' + req.files.file.name;
+  var thumbsPath = 'public/product_images/' + id + '/gallery/thumbs/' + req.files.file.name;
+
+  productImage.mv(path, (err) => {
+    if (err) console.log(err);
+
+    resizeImg(fs.readFileSync(path), { width: 100, height: 100 }).then((buf) => {
+      fs.writeFileSync(thumbsPath, buf);
+    });
+  });
+
+  res.sendStatus(200);
 });
 
 /*
