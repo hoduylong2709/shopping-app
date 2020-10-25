@@ -129,45 +129,44 @@ router.post('/add-product', (req, res) => {
 });
 
 /*
-* POST reorder pages
+* GET edit product
 */
-router.post('/reorder-pages', (req, res) => {
-  var ids = req.body['id[]'];
+router.get('/edit-product/:id', (req, res) => {
+  var errors;
 
-  var count = 0;
+  if (req.session.errors) errors = req.session.errors;
+  req.session.errors = null;
 
-  for (var i = 0; i < ids.length; i++) {
-    var id = ids[i];
-    count++;
+  Category.find((err, categories) => {
+    Product.findById(req.params.id, (err, p) => {
+      if (err) {
+        console.log(err);
+        res.redirect('/admin/products');
+      } else {
+        var galleryDir = 'public/product_images/' + p._id + '/gallery';
+        var galleryImages = null;
 
+        fs.readdir(galleryDir, (err, files) => {
+          if (err) {
+            console.log(err);
+          } else {
+            galleryImages = files;
 
-    ((count) => {
-      Page.findById(id, (err, page) => {
-        page.sorting = count;
-        page.save((err) => {
-          if (err) return console.log(err);
+            res.render('admin/edit_product', {
+              title: p.title,
+              errors: errors,
+              desc: p.desc,
+              categories: categories,
+              category: p.category.replace(/\s+/g, '-').toLowerCase(),
+              price: parseFloat(p.price).toFixed(2),
+              image: p.image,
+              galleryImages: galleryImages,
+              id: p._id
+            });
+          }
         });
-      });
-    })(count);
-  }
-});
-
-/*
-* GET edit page
-*/
-router.get('/edit-page/:id', (req, res) => {
-  Page.findById(req.params.id).then((page) => {
-    if (!page) { //if page not exist in db
-      return res.status(404).send('Page not found');
-    }
-    res.render('admin/edit_page', { //page  exist
-      title: page.title,
-      slug: page.slug,
-      content: page.content,
-      id: page._id
+      }
     });
-  }).catch((e) => {//bad request 
-    res.status(400).send(e);
   });
 });
 
