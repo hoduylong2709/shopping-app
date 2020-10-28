@@ -48,17 +48,6 @@
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-          <!-- <li class="nav-item active">
-            <a class="nav-link" href="#"
-              >Home <span class="sr-only">(current)</span></a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
-          </li> -->
           <% pages.forEach((page) => { %>
             <% if (page.slug === 'home') { %>
               <li class="nav-item"><a class="nav-link" href="/"><%= page.title %></a></li>
@@ -73,5 +62,18 @@
     <main role="main" class="container"></main>
     <!-- /.container -->
     <%- messages('my_message_template', locals) %>
+
+    <div class="row">
+      <div class="col-xs-12 col-md-3">
+        <h3>Categories</h3>
+        <ul class="list-group">
+          <li class="list-group-item"><a href="/products">All products</a></li>
+          <% categories.forEach((c) => { %>
+            <li class="list-group-item"><a href="/products/<%= c.slug %>"><%= c.title %></a></li>
+          <% }); %>
+        </ul>
+      </div>
+      <div class="col-xs-12" col-md-1></div>
+      <div class="col-xs-12 col-md-8">  
   </body>
 </html>
