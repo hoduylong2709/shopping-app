@@ -5,6 +5,9 @@ const router = express.Router();
 // Get Product Model
 var Product = require('../models/product');
 
+// Get Category Model
+var Category = require('../models/category');
+
 /*
  *  GET All Products
  */
@@ -19,21 +22,20 @@ router.get('/', (req, res) => {
 });
 
 /*
- *  GET a page
+ *  GET Products By Category
  */
-router.get('/:slug', (req, res) => {
-  var slug = req.params.slug;
+router.get('/:category', (req, res) => {
+  var categorySlug = req.params.category;
 
-  Page.findOne({ slug: slug }, (err, page) => {
-    if (err) console.log(err);
-    if (!page) {
-      res.redirect('/');
-    } else {
-      res.render('index', {
-        title: page.title,
-        content: page.content
+  Category.findOne({ slug: categorySlug }, (err, c) => {
+    Product.find({ category: categorySlug }, (err, products) => {
+      if (err) console.log(err);
+      console.log(c);
+      res.render('cat_products', {
+        title: 'Category Products',
+        products: products   
       });
-    }
+    });
   });
 });
 
