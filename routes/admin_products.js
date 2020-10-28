@@ -283,13 +283,23 @@ router.get('/delete-image/:image', (req, res) => {
 });
 
 /*
-* GET delete page
+* GET delete product
 */
-router.get('/delete-page/:id', (req, res) => {
-  Page.findByIdAndRemove(req.params.id, (err) => {
-    if (err) return console.log(err);
-    // req.flash('success', 'Page deleted!');
-    res.redirect('/admin/pages/');
+router.get('/delete-product/:id', (req, res) => {
+  var id = req.params.id;
+  var path = 'public/product_images/' + id;
+
+  fs.remove(path, (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      Product.findByIdAndRemove(id, (err) => {
+        console.log(err);
+      });
+
+      // req.flash('success', 'Product deleted!');
+      res.redirect('/admin/products');
+    }
   });
 });
 
